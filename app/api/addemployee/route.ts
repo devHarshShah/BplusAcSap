@@ -14,7 +14,7 @@ const employeeSchema = yup.object({
   employee_branch: yup.string().oneOf(['Mumbai', 'Ahmedabad', 'Hyderabad']).required(),
 });
 
-export default async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   try {
     const verificationResponse = await verifyToken(req);
     if (verificationResponse.status !== 200) {
@@ -59,5 +59,3 @@ export default async function POST(req: NextRequest, res: NextResponse) {
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 });
   }
 }
-
-export { POST };

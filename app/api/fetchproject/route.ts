@@ -3,7 +3,7 @@ import connectMongo from '@/app/db/connectToDb';
 import { verifyToken } from '@/app/middleware/verifyToken';
 import Project from '../../db/models/Project';
 
-export default async function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   if (req.method === 'GET') {
     try {
       const verificationResponse = await verifyToken(req);
@@ -27,5 +27,3 @@ export default async function GET(req: NextRequest) {
     return new NextResponse(`Method ${req.method} Not Allowed`, { status: 405, headers: { 'Allow': 'GET' } });
   }
 }
-
-export { GET };

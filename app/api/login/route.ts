@@ -13,7 +13,7 @@ const loginSchema = yup.object({
   employee_pass: yup.string().min(5).required(),
 });
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     // Validate the input against the schema
     const body = await req.json();
@@ -52,5 +52,3 @@ const token = await new SignJWT({ id: existingEmployee.employee_id })
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 });
   }
 }
-
-export { POST };

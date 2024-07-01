@@ -19,7 +19,7 @@ const timesheetEntrySchema = yup.object({
   employeeCode: yup.string().required(),
 });
 
-export default async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const verificationResponse = await verifyToken(req);
     if (verificationResponse.status !== 200) {
@@ -62,5 +62,3 @@ export default async function POST(req: NextRequest, res: NextResponse) {
     return NextResponse.json({ message: 'An error occurred' }, { status: 500 });
   }
 }
-
-export { POST };
