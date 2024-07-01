@@ -19,7 +19,7 @@ export default function Widget() {
             <h1 className="text-4xl font-bold">Welcome to SAP Synergy: Unveiling Insights, Simplifying Complexity</h1>
             <ul className="list-disc list-inside space-y-2 text-lg">
               <li>Welcome to the future of streamlined collaboration and organizational efficiency.</li>
-              <li>Monitor and manage the team's workflow effectively.</li>
+              <li>Monitor and manage the team&apos;s workflow effectively.</li>
               <li>Utilize powerful project cost management and resource planning tools.</li>
               <li>Leverage advanced analytics for data-driven decision making.</li>
             </ul>

@@ -3,7 +3,7 @@ import { ObjectId, set } from 'mongoose';
 import Navbar from '../../components/Navbar';
 import { useEffect, useState } from 'react';
 
-const timesheet = ({ params }: { params: { slug: string } }) => {
+const Timesheet = ({ params }: { params: { slug: string } }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   if (params.slug === 'admin') {
@@ -648,4 +648,4 @@ const timesheet = ({ params }: { params: { slug: string } }) => {
   );
 };
 
-export default timesheet;
+export default Timesheet;
