@@ -34,7 +34,7 @@ const Login = () => {
 
         // Redirect based on the employeeId
         if (employeeId === "1" || employeeId === "11" || employeeId === "101") {
-          router.push('/timesheet/admin');
+          router.push('/timesheet/user');
         } else {
           router.push('/timesheet/user');
         }
