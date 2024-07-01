@@ -7,7 +7,9 @@ import Link from 'next/link';
 const Navbar = () => {
   const router = useRouter();
   function hasCookie(cookieName: string): boolean {
-
+    if (typeof window === 'undefined') {
+      return false; // Return false or handle accordingly for server-side rendering
+    }
     return document.cookie
       .split(';')
       .map((entry) => entry.split('='))
