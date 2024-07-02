@@ -119,6 +119,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
       }
 
       const data = await response.json();
+      setFetchedTimeSheet(true);
       alert("Successfully saved timesheet for approval.")
       // Handle success, e.g., showing a success message or redirecting the user
     } catch (error) {
