@@ -9,7 +9,7 @@ const projectSchema = yup.object({
   project_id: yup.string().required(),
   project_name: yup.string().required(),
   project_revenue: yup.number(),
-  project_status: yup.string().required().oneOf(['Active', 'Completed', 'Cancelled', 'Inactive', 'Overhead']),
+  project_status: yup.string().oneOf(['Active', 'Completed', 'Cancelled', 'Inactive', 'Overhead']),
   project_allocated_expense: yup.number(),
   expense_entry: yup.string(), // Assuming expense_entry is a string representing ObjectId
 });

@@ -6,8 +6,6 @@ const AddProject = () => {
   const [formData, setFormData] = useState({
     project_id: '',
     project_name: '',
-    project_revenue: '',
-    project_status: '',
     project_allocated_expense: 0,
   });
 
@@ -67,26 +65,8 @@ const AddProject = () => {
             <input type="text" name="project_name" id="project_name" placeholder="Project Name" value={formData.project_name} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 sm:text-sm" />
           </div>
           <div className="mb-4">
-            <label htmlFor="project_revenue" className="block text-sm font-medium text-gray-700">
-              Project Revenue
-            </label>
-            <input type="text" name="project_revenue" id="project_revenue" placeholder="Project Revenue" value={formData.project_revenue} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 sm:text-sm" />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="project_status" className="block text-sm font-medium text-gray-700">
-              Project Status
-            </label>
-            <select name="project_status" id="project_status" value={formData.project_status} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 sm:text-sm text-black">
-              <option value="">Select Status</option>
-              <option value="Active">Active</option>
-              <option value="Completed">Completed</option>
-              <option value="Cancelled">Cancelled</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          <div className="mb-4">
             <label htmlFor="project_allocated_expense" className="block text-sm font-medium text-gray-700 ">
-              Allocated Expense
+              Fees
             </label>
             <input type="number" name="project_allocated_expense" id="project_allocated_expense" placeholder="Allocated Expense" value={formData.project_allocated_expense} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2 text-gray-700" />
           </div>

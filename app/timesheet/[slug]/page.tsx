@@ -36,6 +36,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     _id: ObjectId;
     employee_id: string;
     employee_name: string;
+    employee_email: string;
   }
 
   interface TimesheetEntry {
@@ -83,7 +84,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
       }
 
       const data = await response.json();
-      alert("Successfully updated timesheet.")
+      alert('Successfully updated timesheet.');
       // Handle success, e.g., showing a success message or redirecting the user
     } catch (error) {
       console.error('Error:', error);
@@ -120,7 +121,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
 
       const data = await response.json();
       setFetchedTimeSheet(true);
-      alert("Successfully saved timesheet for approval.")
+      alert('Successfully saved timesheet for approval.');
       // Handle success, e.g., showing a success message or redirecting the user
     } catch (error) {
       console.error('Error:', error);
@@ -130,7 +131,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
 
   const aggregateHours = (entries: TimesheetEntry[]): any => {
     const summary = {
-      Project: { WFO: 0, WFH: 0, Total: 0 },
+      Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 },
       Others: { Total: 0 },
       Leave: { Total: 0 },
     };
@@ -146,15 +147,18 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
         summary['Project']['WFO'] += calculateRowTotalHours(entry);
       } else if (entry.workType === 'WFH') {
         summary['Project']['WFH'] += calculateRowTotalHours(entry);
+      } else if (entry.workType === 'Site-visit' || entry.workType === 'Meeting') {
+        summary['Project']['SITE'] += calculateRowTotalHours(entry);
       }
     });
 
     // Calculate the total for 'Project'
-    summary['Project']['Total'] = summary['Project']['WFO'] + summary['Project']['WFH'];
+    summary['Project']['Total'] = summary['Project']['WFO'] + summary['Project']['WFH'] + summary['Project']['SITE'];
     return summary;
   };
 
   const [employee, setEmployee] = useState<Employee | null>(null);
+  const [error, setError] = useState({ isError: false, message: '' });
   const [employeeName, setEmployeeName] = useState('');
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [startDate, setStartDate] = useState('');
@@ -164,10 +168,15 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
   const [teamsheetid, setTeamsheetid] = useState('');
   const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntry[]>([{ projectId: '', projectName: '', description: '', workType: '', hours: {} }]);
   const [unapprovedTimesheets, setUnapprovedTimesheets] = useState<Timesheet[]>();
-  const [summary, setSummary] = useState({ Project: { WFO: 0, WFH: 0, Total: 0 }, Others: { Total: 0 }, Leave: { Total: 0 } });
+  const [summary, setSummary] = useState({ Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 }, Others: { Total: 0 }, Leave: { Total: 0 } });
+  const [rejectMessage, setRejectMessage] = useState('');
   const workTypes = ['WFO', 'WFH', 'Site-visit', 'Meeting'];
 
   const overheads = ['Annual Leave', 'Sick Leave', 'Public Holiday', 'Business Development', 'Admin', 'IT Outage', 'Bench', 'CPD'];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRejectMessage(e.target.value);
+  };
 
   const generateDates = (start: string, count: number): { day: string; date: string }[] => {
     let dates: { day: string; date: string }[] = [];
@@ -299,7 +308,9 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
   const calculateColumnTotalHours = (entries: TimesheetEntry[], date: string) => {
     return entries.reduce((total, entry) => {
       const hours = entry.hours[date] || 0; // Assuming entry.hours is an object with dates as keys
-      return total + Number(hours);
+      total += Number(hours);
+
+      return total;
     }, 0);
   };
 
@@ -407,12 +418,39 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     });
     if (timesheetApproveResponse.ok) {
       const data = await timesheetApproveResponse.json();
-      alert("Successfully approved timesheet.")
+      alert('Successfully approved timesheet.');
       // Handle success
     } else {
       console.error('Failed to approve timesheet:', timesheetApproveResponse.statusText);
       // Handle failure
     }
+  };
+
+  const handleReject = async () => {
+    fetch('/api/rejecttimesheet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        dateRange: `${startDate} to ${endDate}`,
+        reason: rejectMessage,
+        receiver: employee?.employee_email,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          alert('Successfully rejected timesheet.');
+          // Handle success
+        } else {
+          console.error('Failed to reject timesheet:', response.statusText);
+          // Handle failure
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Handle error
+      });
   };
 
   return (
@@ -495,6 +533,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
                   <th className="border border-black">Project/Overhead</th>
                   <th className="border border-black">WFO</th>
                   <th className="border border-black">WFH</th>
+                  <th className="border border-black">Site/Meeting</th>
                   <th className="border border-black">Total</th>
                 </tr>
               </thead>
@@ -504,6 +543,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
                   <td className="border border-black text-center">Projects</td>
                   <td className="border border-black text-center">{summary.Project.WFO}</td>
                   <td className="border border-black text-center">{summary.Project.WFH}</td>
+                  <td className="border border-black text-center">{summary.Project.SITE}</td>
                   <td className="border border-black text-center">{summary.Project.Total}</td>
                 </tr>
                 <tr className="border border-black">
@@ -532,6 +572,9 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
         </button>
         <button onClick={deleteLastEntry} className="my-4 mx-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
           Delete Last Entry
+        </button>
+        <button className="my-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => alert('Half Day Leave = 4 hours \nFull Day Leave = 8 hours')}>
+          FAQ's
         </button>
         <table className="table-auto w-full text-black border border-black">
           <thead className="border-black border">
@@ -624,26 +667,35 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
           <div className="flex flex-row space-x-4">
             <button
               onClick={handleUpdate}
-              disabled={checkApprovalStatus} // Disable button if checkApprovalStatus is true
+              disabled={checkApprovalStatus && error.isError} // Disable button if checkApprovalStatus is true
               className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-700'} text-white font-bold py-2 px-4 rounded`}>
               Update Timesheet
             </button>
             {isAdmin && (
-              <button
-                onClick={handleApprove} // Assuming handleApprove is your method to approve the timesheet
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Approve Timesheet
-              </button>
+              <>
+                <button
+                  onClick={handleApprove} // Assuming handleApprove is your method to approve the timesheet
+                  className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Approve Timesheet
+                </button>
+                <button
+                  onClick={handleReject} // Assuming handleApprove is your method to approve the timesheet
+                  className="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                  Reject Timesheet
+                </button>
+                <input type="text" placeholder="Reason for rejection" className="mt-4 w-[51%] p-2 border border-black text-black" onChange={handleChange} value={rejectMessage} />
+              </>
             )}
           </div>
         ) : (
           <button
             onClick={handleSubmit}
-            disabled={checkApprovalStatus} // Disable button if checkApprovalStatus is true
+            disabled={checkApprovalStatus && error.isError} // Disable button if checkApprovalStatus is true
             className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
           </button>
         )}
+        <p className="text-red">{error.message}</p>
       </div>
     </div>
   );

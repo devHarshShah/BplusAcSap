@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
     // Connect to the database
     await connectMongo();
-
+    validatedData.employee_email = validatedData.employee_email.toLowerCase();
     const existingEmployee = await Employee.findOne({ employee_email: validatedData.employee_email });
     if (!existingEmployee) {
       return NextResponse.json({ errors: ['Email does not exist'] }, { status: 400 });
