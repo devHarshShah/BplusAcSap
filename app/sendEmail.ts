@@ -4,13 +4,18 @@ const emailConfig = require('./emailConfig');
 
 const transporter = nodemailer.createTransport(emailConfig);
 
-const sendRejectionEmail = async (reason : string, dateRange: string, receiver: string) => {
+const sendCustomEmail = async (
+  receiver: string,
+  subject: string,
+  text: string,
+  html: string
+) => {
   const mailOptions = {
     from: '"BplusAc Pvt Ltd" <noreply@bplusac.com>', // sender address
     to: receiver, // receiver
-    subject: 'Timesheet Rejected', // Subject line
-    text: `Dear User,\n\nYour timesheet for the period ${dateRange} has been rejected due to the following reason:\n${reason}\n\nBest regards,\nThe Admin Team`, // plain text body
-    html: `<p>Dear User,</p><p>Your timesheet for the period <strong>${dateRange}</strong> has been rejected due to the following reason:</p><p>${reason}</p><p>Best regards,<br>The Admin Team</p>`, // html body
+    subject: subject, // Subject line dynamically provided
+    text: text, // plain text body dynamically provided
+    html: html, // html body dynamically provided
   };
 
   try {
@@ -21,4 +26,4 @@ const sendRejectionEmail = async (reason : string, dateRange: string, receiver: 
   }
 };
 
-export default sendRejectionEmail;
+export default sendCustomEmail;

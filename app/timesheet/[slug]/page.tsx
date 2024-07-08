@@ -1,5 +1,5 @@
 'use client';
-import { ObjectId, set } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import Navbar from '../../components/Navbar';
 import { useEffect, useState } from 'react';
 
@@ -694,6 +694,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
             className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
           </button>
+
         )}
         <p className="text-red">{error.message}</p>
       </div>
