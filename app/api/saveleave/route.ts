@@ -9,8 +9,8 @@ import sendCustomEmail from '@/app/sendEmail';
 // Define the validation schema for the leave form
 const leaveFormSchema = yup.object({
   leave_type: yup.string().oneOf(['Annual', 'Sick']).required(),
-  start_date: yup.date().required(),
-  end_date: yup.date(),
+  start_date: yup.string().required(),
+  end_date: yup.string(),
   reason: yup.string().required(),
   duration: yup.number().required(),
   duration_type: yup.string().oneOf(['Full Day', 'Half Day', 'Quarter Day']).required(),
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       if (emailRecipients) {
         const emailSubject = 'New Leave Request';
         const emailText = `A new leave request has been submitted by ${employee_name}. Please review it.`;
-        const emailHtml = `<p>A new leave request has been submitted by <strong> ${employee_name} </strong> for reason <strong>${reason}</strong>. Please review it.</p>`;
+        const emailHtml = `<p>A new leave request has been submitted by <strong> ${employee_name} </strong> for reason <strong>${reason}</strong>. Please review it <a href="https://https://bplus-ac-sap.vercel.app/applyleave/admin">here</a>.</p>`;
         // Send the email
         await sendCustomEmail(emailRecipients, emailSubject, emailText, emailHtml);
       }

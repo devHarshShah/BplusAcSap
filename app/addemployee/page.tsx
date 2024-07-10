@@ -8,6 +8,7 @@ const AddEmployeeForm = () => {
     employee_email: '',
     employee_pass: '',
     employee_branch: '',
+    doj: '',
   });
 
   interface FormData {
@@ -16,6 +17,7 @@ const AddEmployeeForm = () => {
     employee_email: string;
     employee_pass: string;
     employee_branch: string;
+    doj: string;
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -77,6 +79,12 @@ const AddEmployeeForm = () => {
               Employee Email
             </label>
             <input type="email" name="employee_email" id="employee_email" value={formData.employee_email} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 sm:text-sm" />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="doj" className="block text-sm font-medium text-gray-700">
+              Date of Joining
+            </label>
+            <input type="date" name="doj" id="doj" value={formData.doj} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 sm:text-sm" />
           </div>
           <div className="mb-4">
             <label htmlFor="employee_pass" className="block text-sm font-medium text-gray-700">

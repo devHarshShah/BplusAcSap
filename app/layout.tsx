@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "BPlusAC Beta v0.0.3",
+  title: "BPlusAC Beta v0.1.0",
   description: "Fully functional SAP system",
 };
 

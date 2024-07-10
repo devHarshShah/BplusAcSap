@@ -7,7 +7,8 @@ interface EmployeeDocument extends Document {
   employee_email: string;
   employee_pass: string;
   employee_branch: 'Mumbai' | 'Ahmedabad' | 'Hyderabad';
-  doj: Date;
+  doj: string;
+  available_leaves: { annual: number; sick: number };
   cost_rate_per_hour_rs: number;
   overhead_expenses: Array<mongoose.Types.ObjectId>;
   timesheet: Array<mongoose.Types.ObjectId>;
@@ -21,20 +22,21 @@ const employeeSchema = new Schema<EmployeeDocument>({
   employee_email: { type: String, required: true },
   employee_pass: { type: String, required: true },
   employee_branch: { type: String, enum: ['Mumbai', 'Ahmedabad', 'Hyderabad'], required: true },
-  doj: { type: Date, required: false },
+  doj: { type: String, required: false },
+  available_leaves: { annual: Number, sick: Number },
   cost_rate_per_hour_rs: { type: Number, required: false },
   overhead_expenses: [{ type: Schema.Types.ObjectId, ref: 'Overhead' }],
   timesheet: [{ type: Schema.Types.ObjectId, ref: 'Overhead' }],
-  leave: [{ type: Schema.Types.ObjectId, ref: 'Leave' }]
+  leave: [{ type: Schema.Types.ObjectId, ref: 'Leave' }],
 });
 
 // Attempt to retrieve the model, creating it if it doesn't exist
 let Employee: Model<EmployeeDocument>;
 
 try {
-    Employee = mongoose.model<EmployeeDocument>('Employee');
+  Employee = mongoose.model<EmployeeDocument>('Employee');
 } catch (error) {
-    Employee = mongoose.model<EmployeeDocument>('Employee', employeeSchema);
+  Employee = mongoose.model<EmployeeDocument>('Employee', employeeSchema);
 }
 
 export default Employee;
