@@ -20,7 +20,7 @@ const sendCustomEmail = async (
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('Message sent: %s', info.messageId);
+    //console.log('Message sent: %s', info.messageId);
   } catch (error) {
     console.error('Error occurred', error);
   }

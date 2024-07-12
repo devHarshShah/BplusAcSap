@@ -1,24 +1,25 @@
 import { NextResponse, NextRequest } from 'next/server';
 import connectMongo from '@/app/db/connectToDb';
 import { verifyToken } from '@/app/middleware/verifyToken';
-import Leave from '../../db/models/Leave';
+import TimesheetWeek from '../../db/models/Timesheet';
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
     const verificationResponse = await verifyToken(req);
     if (verificationResponse.status !== 200) {
       return verificationResponse; // If token verification fails, return the response from verifyToken
     }
+    const { employeeCode } = await req.json(); // Extract employeeCode and mondayDate from request
 
     await connectMongo(); // Connect to MongoDB
 
     // Fetch timesheets for the employee
-    const leaves = await Leave.find({ status: 'Pending' }).populate('employee_id', 'employee_name employee_branch employee_id available_leaves');
+    const timesheets = await TimesheetWeek.find({ employeeCode: employeeCode });
 
-    if (leaves.length !== 0) {
-      return NextResponse.json(leaves); // Return the matching timesheet
+    if (timesheets) {
+      return NextResponse.json(timesheets); // Return the matching timesheet
     } else {
-      return NextResponse.json([], { status: 404 }); // Timesheet not found
+      return NextResponse.json({ message: 'Timesheet not found' }, { status: 404 }); // Timesheet not found
     }
   } catch (error) {
     console.error(error); // Log error

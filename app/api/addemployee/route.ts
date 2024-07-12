@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     // Validate the input against the schema
 
     const body = await req.json();
-    console.log(body);
+    //console.log(body);
 
     const validatedData = await employeeSchema.validate(body);
 

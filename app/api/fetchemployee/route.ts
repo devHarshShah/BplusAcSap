@@ -3,6 +3,7 @@ import connectMongo from '@/app/db/connectToDb';
 import Employee from '../../db/models/Employee';
 import { verifyToken } from '../../middleware/verifyToken'; // Adjust the path as necessary
 import { decodeJwt } from 'jose';
+import Overhead from '@/app/db/models/Overhead';
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,7 +22,9 @@ export async function POST(req: NextRequest) {
     const employeeId = jwt ? decodeJwt(jwt).id : undefined;
 
     // Fetch the employee details
-    const employeeDetails = await Employee.findOne({ employee_id: employeeId });
+    // Fetch the employee details and populate both leave and timesheet fields
+    const employeeDetails = await Employee.findOne({ employee_id: employeeId })
+
     if (!employeeDetails) {
       return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
     }

@@ -5,15 +5,19 @@ import logo from '../../public/logo.png';
 import { useRouter } from 'next/navigation'; // Corrected from 'next/navigation'
 import Link from 'next/link';
 import Script from 'next/script';
+import { set } from 'mongoose';
 
 const Navbar = () => {
   const router = useRouter();
   const [cookieExists, setCookieExists] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMasterAdmin, setMasterAdmin] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen1, setIsDropdownOpen1] = useState(false);
 
   // Event handler to toggle dropdown visibility
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleDropdown1 = () => setIsDropdownOpen1(!isDropdownOpen1);
 
   function hasCookie(cookieName: string): boolean {
     if (typeof window === 'undefined') {
@@ -37,10 +41,14 @@ const Navbar = () => {
       });
       if (response.ok) {
         const data = await response.json(); // Use await to wait for the JSON response
-        if (data.employeeId === '1' || data.employeeId === '101' || data.employeeId === '11') {
+        if (data.employeeId === '101' || data.employeeId === '11') {
           setIsAdmin(true);
         } else {
           setIsAdmin(false); // Redirect to the homepage if the user is not an admin
+        }
+        if (data.employeeId === '1') {
+          setMasterAdmin(true);
+          setIsAdmin(true);
         }
       }
     })();
@@ -64,21 +72,60 @@ const Navbar = () => {
             <ul className="flex space-x-4 ml-16">
               {/* Admin-specific links */}
               <li>
-                <Link href="/dashboard" className="hover:text-zinc-400">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/timesheet/admin" className="hover:text-zinc-400">
-                  Approve Timesheets
-                </Link>
+                {!isMasterAdmin ? (
+                  <Link href="/dashboard" className="hover:text-zinc-400">
+                    Dashboard
+                  </Link>
+                ) : (
+                  <Link href="/admindashboard" className="hover:text-zinc-400">
+                    Dashboard
+                  </Link>
+                )}
               </li>
               <li>
                 <Link href="/timesheet/user" className="hover:text-zinc-400">
                   Add Timesheets
                 </Link>
               </li>
-              <li style={{ position: 'relative' }}> {/* Add relative positioning here */}
+              <li>
+                <Link href="/applyleave/user" className="hover:text-zinc-400">
+                  Apply Leave
+                </Link>
+              </li>
+              <li style={{ position: 'relative' }}>
+                {' '}
+                {/* Add relative positioning here */}
+                <button
+                  id="dropdownNavbarLink"
+                  data-dropdown-toggle="dropdownNavbar"
+                  className="text-white hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 pl-3 pr-4 py-2 md:p-0 flex items-center justify-between w-full md:w-auto"
+                  onClick={toggleDropdown1} // Attach the event handler here
+                >
+                  Approve{' '}
+                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                  </svg>
+                </button>
+                <div id="dropdownNavbar" className={`${isDropdownOpen1 ? '' : 'hidden'} bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow my-4 w-44 absolute`} style={{ top: '100%' }}>
+                  {' '}
+                  {/* Add absolute positioning and set top to 100% */}
+                  <ul className="py-1" aria-labelledby="dropdownLargeButton">
+                    <li>
+                      <Link href="/timesheet/admin" className="text-sm hover:bg-gray-100 text-gray-700 block px-4 py-2">
+                        Approve Timesheet
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/applyleave/admin" className="text-sm hover:bg-gray-100 text-gray-700 block px-4 py-2">
+                        Approve Leave
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li style={{ position: 'relative' }}>
+                {' '}
+                {/* Add relative positioning here */}
                 <button
                   id="dropdownNavbarLink"
                   data-dropdown-toggle="dropdownNavbar"
@@ -90,7 +137,9 @@ const Navbar = () => {
                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"></path>
                   </svg>
                 </button>
-                <div id="dropdownNavbar" className={`${isDropdownOpen ? '' : 'hidden'} bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow my-4 w-44 absolute`} style={{ top: '100%' }}> {/* Add absolute positioning and set top to 100% */}
+                <div id="dropdownNavbar" className={`${isDropdownOpen ? '' : 'hidden'} bg-white text-base z-10 list-none divide-y divide-gray-100 rounded shadow my-4 w-44 absolute`} style={{ top: '100%' }}>
+                  {' '}
+                  {/* Add absolute positioning and set top to 100% */}
                   <ul className="py-1" aria-labelledby="dropdownLargeButton">
                     <li>
                       <Link href="/addemployee" className="text-sm hover:bg-gray-100 text-gray-700 block px-4 py-2">
@@ -110,13 +159,18 @@ const Navbar = () => {
             <ul className="flex space-x-4 ml-16">
               {/* User-specific links */}
               <li>
-                <Link href="/" className="hover:text-zinc-400">
-                  Home
+                <Link href="/dashboard" className="hover:text-zinc-400">
+                  Dashboard
                 </Link>
               </li>
               <li>
-                <Link href="/profile" className="hover:text-zinc-400">
-                  Profile
+                <Link href="/timesheet/user" className="hover:text-zinc-400">
+                  Add Timesheets
+                </Link>
+              </li>
+              <li>
+                <Link href="/applyleave/user" className="hover:text-zinc-400">
+                  Apply Leave
                 </Link>
               </li>
             </ul>

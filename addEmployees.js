@@ -124,7 +124,7 @@ const employees = [
 async function addEmployee(employee) {
   try {
     const response = await axios.post('http://localhost:3000/api/addemployee', employee);
-    console.log(`Added employee: ${employee.employee_name}, Response status: ${response.status}`);
+    //console.log(`Added employee: ${employee.employee_name}, Response status: ${response.status}`);
   } catch (error) {
     console.error(`Error adding employee: ${employee.employee_name}, Error: ${error.message}`);
   }

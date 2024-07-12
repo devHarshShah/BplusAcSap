@@ -191,7 +191,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
       if (!isNaN(newDate.getTime())) {
         // Check if newDate is valid
         // Format date as YYYY-MM-DD and get short day name
-        let formattedDate = newDate.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit' });
+        let formattedDate = newDate.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' });
         let dayName = newDate.toLocaleDateString('en-US', { weekday: 'short' });
         dates.push({ day: dayName, date: formattedDate });
       } else {
@@ -270,7 +270,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     setSummary(aggregateHours(timesheetEntries));
-    console.log(summary);
+    //console.log(summary);
   }, [timesheetEntries]);
 
   const handleEntryChange = (index: number, field: string, value: string | number) => {
@@ -326,7 +326,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     if (response.ok) {
       const data = await response.json();
       setUnapprovedTimesheets(data);
-      console.log(data);
+      //console.log(data);
       // Handle the data as needed
     } else {
       console.error('Failed to fetch unapproved timesheets:', response.statusText);

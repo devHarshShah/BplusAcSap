@@ -84,7 +84,7 @@ const LeaveForm = ({ params }: { params: { slug: string } }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ leaveType, duration, startDate, endDate, days, reason });
+    //console.log({ leaveType, duration, startDate, endDate, days, reason });
     const formData = {
       leave_type: leaveType,
       start_date: startDate,
@@ -110,7 +110,7 @@ const LeaveForm = ({ params }: { params: { slug: string } }) => {
       }
 
       const data = await response.json();
-      console.log('Success:', data);
+      //console.log('Success:', data);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -145,7 +145,7 @@ const LeaveForm = ({ params }: { params: { slug: string } }) => {
       }
 
       const data = await response.json();
-      console.log('Success:', data);
+      //console.log('Success:', data);
     } catch (error) {
       console.error('Error:', error);
     }

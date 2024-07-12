@@ -1,12 +1,23 @@
-import mongoose from 'mongoose'
-const Schema = mongoose.Schema;
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
-const overheadSchema = new Schema({
-    employee: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
-    expense_type: { type: String, required: true },
-    amount: { type: Number, required: true }
+interface OverheadDocument extends Document {
+  employee: mongoose.Types.ObjectId;
+  expense_type: string;
+  amount: number;
+}
+
+const overheadSchema = new Schema<OverheadDocument>({
+  employee: { type: Schema.Types.ObjectId, ref: 'Employee', required: true },
+  expense_type: { type: String, required: true },
+  amount: { type: Number, required: true }
 });
 
-const Overhead = mongoose.model('Overhead', overheadSchema);
+let Overhead: Model<OverheadDocument>;
 
-module.exports = Overhead;
+try {
+  Overhead = mongoose.model<OverheadDocument>('Overhead');
+} catch (error) {
+  Overhead = mongoose.model<OverheadDocument>('Overhead', overheadSchema);
+}
+
+export default Overhead;

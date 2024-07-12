@@ -56,7 +56,7 @@ const addProject = async (project: any) => {
       const error = await response.json();
       console.error('Error adding project:', error);
     } else {
-      console.log('Project added successfully:', project.project_id);
+      //console.log('Project added successfully:', project.project_id);
     }
   } catch (error) {
     console.error('Error:', error);
