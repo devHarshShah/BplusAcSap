@@ -57,6 +57,10 @@ const Dashboard = () => {
         });
 
         if (!response.ok) {
+          const responseData = await response.json();
+          if (responseData.redirectTo) {
+            window.location.href = responseData.redirectTo;
+          }
           throw new Error('Failed to fetch employee details');
         }
 

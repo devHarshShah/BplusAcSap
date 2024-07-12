@@ -79,14 +79,14 @@ const Login = () => {
             <button onClick={handleLogin} className="w-full bg-[#E25037] text-white py-2 rounded-lg hover:bg-[#71281B] transition duration-200">
               Login
             </button>
-            {/*<div className="mt-6 text-center">
+            <div className="mt-6 text-center">
               <p className="text-zinc-400 mt-2">
                 Forgotten your password?{' '}
                 <a href="#" className="text-blue-400">
                   Reset
                 </a>
               </p>
-            </div>*/}
+            </div>
           </div>
         </div>
       </div>

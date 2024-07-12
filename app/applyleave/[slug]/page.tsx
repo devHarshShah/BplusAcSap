@@ -141,6 +141,10 @@ const LeaveForm = ({ params }: { params: { slug: string } }) => {
       });
 
       if (!response.ok) {
+        const responseData = await response.json();
+        if (responseData.redirectTo) {
+          window.location.href = responseData.redirectTo;
+        }
         throw new Error('Network response was not ok');
       }
 

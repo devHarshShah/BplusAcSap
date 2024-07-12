@@ -28,6 +28,7 @@ interface Employee {
   employee_name: string;
   employee_branch: string;
   employee_id: string;
+  available_leaves: { annual: number; sick: number };
 }
 
 const admindashboard = () => {
@@ -38,8 +39,11 @@ const admindashboard = () => {
     const fetchUnapprovedLeaves = async () => {
       try {
         const response = await fetch('/api/leaveunapproved');
+        const responseData = await response.json();
         if (!response.ok) {
-          throw new Error('Failed to fetch unapproved leaves');
+          if (responseData.redirectTo) {
+            window.location.href = responseData.redirectTo;
+          }
         }
         if (response.status === 404) {
           setUnapprovedLeaves([]);
@@ -107,7 +111,7 @@ const admindashboard = () => {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'radial-gradient(circle 72rem at 80% 75%, rgb(226, 80, 55), rgb(113, 40, 27))' }}>
       <Navbar />
-      <div className="flex flex-col bg-white w-[90%] h-[80%] mx-auto my-auto p-5 rounded-xl text-black">
+      <div className="flex flex-col bg-white w-[95%] h-[80%] mx-auto my-auto p-5 rounded-xl text-black">
         <div className="flex flex-row p-2 space-x-8">
           <div className="w-1/2 p-2 border border-black rounded-xl">
             <h1 className="text-2xl font-bold">Unapproved Leaves</h1>
@@ -139,7 +143,7 @@ const admindashboard = () => {
               </div>
             )}
           </div>
-          <div className="w-1/4 p-2 border border-black rounded-xl">
+          <div className="w-1/5 p-2 border border-black rounded-xl">
             <h1 className="text-2xl font-bold">Projects</h1>
             {projects?.length === 0 ? (
               <div>No projects</div>
@@ -150,13 +154,12 @@ const admindashboard = () => {
                   .map((project) => (
                     <div key={project._id} className="py-2 hover:bg-gray-50 flex flex-row items-center justify-between">
                       <div className="flex-2 truncate p-2">{project.project_name}</div>
-                      <div className="flex-shrink m-2">{project.project_status}</div>
                     </div>
                   ))}
               </div>
             )}
           </div>
-          <div className="w-1/4 p-2 border border-black rounded-xl">
+          <div className="w-[30%] p-2 border border-black rounded-xl">
             <h1 className="text-2xl font-bold">Employees</h1>
             {employees?.length === 0 ? (
               <div>No employees</div>
@@ -164,15 +167,21 @@ const admindashboard = () => {
               <div className="divide-y divide-gray-200 overflow-y-scroll h-[250px]">
                 {employees?.map((employee) => (
                   <div key={employee.employee_id} className="py-2 hover:bg-gray-50 flex flex-row items-center justify-between">
-                    <div className="flex-2 truncate p-2">{employee.employee_name}</div>
-                    <div className="flex-shrink m-2">{employee.employee_branch}</div>
+                    <div className="flex-1 truncate px-2">{employee.employee_name}</div>
+                    <div className="flex-1 px-2 text-center">{employee.employee_branch}</div>
+                    <div className="flex-1 px-2 flex flex-row justify-end items-center">
+                      <span className="font-semibold">A:</span>
+                      <span className="ml-1 mr-3">{employee.available_leaves.annual}</span>
+                      <span className="font-semibold">S:</span>
+                      <span className="ml-1">{employee.available_leaves.sick}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
         </div>
-        <ProjectAnalysis projects={projects} employees={employees} />
+        <ProjectAnalysis projects={projects} />
       </div>
     </div>
   );

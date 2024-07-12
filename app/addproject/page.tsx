@@ -34,7 +34,10 @@ const AddProject = () => {
         // Handle success
       } else {
         alert('Error: ' + JSON.stringify(data.errors));
-        // Handle server validation errors
+        const responseData = await response.json();
+          if (responseData.redirectTo) {
+            window.location.href = responseData.redirectTo;
+          }
       }
     } catch (error) {
       console.error('Error:', error);

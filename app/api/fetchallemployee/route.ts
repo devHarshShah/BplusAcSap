@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
       await connectMongo();
 
       // Fetch the list of all projects with only the project name and id
-      const projects = await Employee.find({}, 'employee_name employee_branch employee_id');
+      const projects = await Employee.find({}, 'employee_name employee_branch employee_id available_leaves');
 
       // Send the response with the projects
       return new NextResponse(JSON.stringify(projects), { status: 200, headers: { 'Content-Type': 'application/json' } });

@@ -36,7 +36,6 @@ interface Employee {
 
 interface ProjectAnalysisProps {
   projects: Project[] | undefined;
-  employees: Employee[] | undefined;
 }
 
 interface Data {
@@ -49,7 +48,7 @@ interface ProjectAnalysis {
   data: { LTD: number; YTD: number; Month: number; Week: number };
 }
 
-const ProjectAnalysis: React.FC<ProjectAnalysisProps> = ({ projects, employees }) => {
+const ProjectAnalysis: React.FC<ProjectAnalysisProps> = ({ projects }) => {
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
   const [data, setData] = useState<Data[]>([]);
@@ -160,17 +159,17 @@ const ProjectAnalysis: React.FC<ProjectAnalysisProps> = ({ projects, employees }
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Employee Name
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               LTD
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
               YTD
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Month
+            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Current Month
             </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Week
+            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Current Week
             </th>
           </tr>
         </thead>
@@ -185,10 +184,10 @@ const ProjectAnalysis: React.FC<ProjectAnalysisProps> = ({ projects, employees }
             AnalyseProject(data).map((analysis) => (
               <tr key={analysis.employeeName}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{analysis.employeeName}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.LTD}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.YTD}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.Month}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.Week}</td>
+                <td className="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.LTD}</td>
+                <td className="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.YTD}</td>
+                <td className="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.Month}</td>
+                <td className="px-6 text-center py-4 whitespace-nowrap text-sm text-gray-500">{analysis.data.Week}</td>
               </tr>
             ))
           )}
