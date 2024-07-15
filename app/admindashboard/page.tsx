@@ -31,7 +31,7 @@ interface Employee {
   available_leaves: { annual: number; sick: number };
 }
 
-const admindashboard = () => {
+const AdminDashboard = () => {
   const [unapprovedLeaves, setUnapprovedLeaves] = useState<Leave[]>([]);
   const [projects, setProjects] = useState<Project[]>();
   const [employees, setEmployees] = useState<Employee[]>();
@@ -187,4 +187,4 @@ const admindashboard = () => {
   );
 };
 
-export default admindashboard;
+export default AdminDashboard;
