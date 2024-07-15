@@ -6,6 +6,10 @@ import TimesheetWeek from '@/app/db/models/Timesheet';
 export async function GET(req: NextRequest) {
   if (req.method === 'GET') {
     try {
+      const verificationResponse = await verifyToken(req);
+      if (verificationResponse.status !== 200) {
+        return verificationResponse; // If token verification fails, return the response from verifyToken
+      }
       // Connect to the database
       await connectMongo();
 

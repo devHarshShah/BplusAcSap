@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import logo from '../../../public/logo.png';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const Login = () => {
@@ -82,9 +83,9 @@ const Login = () => {
             <div className="mt-6 text-center">
               <p className="text-zinc-400 mt-2">
                 Forgotten your password?{' '}
-                <a href="#" className="text-blue-400">
+                <Link href="/auth/passwordreset" className="text-blue-400">
                   Reset
-                </a>
+                </Link>
               </p>
             </div>
           </div>
