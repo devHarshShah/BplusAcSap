@@ -19,22 +19,25 @@ const Login = () => {
       body: JSON.stringify({ employee_email: email, employee_pass: password }),
     });
 
-    const data = await response.json();
+    if (response.status === 400) {
+      alert('Invalid Password');
+    }
 
     // Inside an async function
     if (response.ok) {
-
+      const data = await response.json();
       // Fetch the employeeId from the /api/fetchEmployeeId endpoint
       const employeeResponse = await fetch('/api/fetchEmployeeId', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }});
+        },
+      });
       if (employeeResponse.ok) {
         const { employeeId } = await employeeResponse.json();
 
         // Redirect based on the employeeId
-        if (employeeId === "1" || employeeId === "11" || employeeId === "101") {
+        if (employeeId === '1' || employeeId === '11' || employeeId === '101') {
           router.push('/timesheet/user');
         } else {
           router.push('/timesheet/user');
@@ -42,8 +45,6 @@ const Login = () => {
       } else {
         console.error('Failed to fetch employee ID');
       }
-    } else {
-      console.error(data.message);
     }
   };
 

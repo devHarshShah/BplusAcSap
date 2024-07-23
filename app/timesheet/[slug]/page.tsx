@@ -326,7 +326,6 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     if (response.ok) {
       const data = await response.json();
       setUnapprovedTimesheets(data);
-      //console.log(data);
       // Handle the data as needed
     } else {
       console.error('Failed to fetch unapproved timesheets:', response.statusText);
@@ -398,10 +397,10 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
       setTimesheetEntries(timesheet.weekEntries);
       setFetchedTimeSheet(true);
       setEmployeeName(timesheet.employeeCode.employee_name);
-      const dateDM = Object.keys(timesheet.weekEntries[0].hours)[0]; // "DD/MM"
-      const [day, month] = dateDM.split('/');
-      const year = new Date().getFullYear(); // Use current year or set a specific year
-      const dateYMD = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`; // "YYYY-MM-DD"
+      const dateDMY = Object.keys(timesheet.weekEntries[0].hours)[0]; // "DD/MM/YY"
+      const [day, month, year] = dateDMY.split('/');
+      const fullYear = `20${year}`; // Assuming the year is in the 21st century
+      const dateYMD = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`; // "YYYY-MM-DD"
       setStartDate(dateYMD);
     }
   };
@@ -470,7 +469,8 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
               <option value="">Select Timesheet</option>
               {unapprovedTimesheets?.map((timesheet) => (
                 <option key={timesheet._id} value={timesheet._id}>
-                  {timesheet.employeeCode.employee_name} - {Object.keys(timesheet.weekEntries[0].hours)[0]}
+                  {timesheet.employeeCode.employee_name} -{' '}
+                  {timesheet.weekEntries && timesheet.weekEntries.length > 0 && timesheet.weekEntries[0].hours && Object.keys(timesheet.weekEntries[0].hours).length > 0 ? Object.keys(timesheet.weekEntries[0].hours)[0] : <span>No data available</span>}
                 </option>
               ))}
             </select>
@@ -694,7 +694,6 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
             className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
           </button>
-
         )}
         <p className="text-red">{error.message}</p>
       </div>

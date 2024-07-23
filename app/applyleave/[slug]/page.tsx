@@ -110,7 +110,7 @@ const LeaveForm = ({ params }: { params: { slug: string } }) => {
       }
 
       const data = await response.json();
-      //console.log('Success:', data);
+      alert("Successfully applied for leave. Please wait for approval.");
     } catch (error) {
       console.error('Error:', error);
     }
