@@ -129,11 +129,49 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     }
   };
 
+  const handleSave = async () => {
+    // Ensure employee is not null before proceeding
+    if (!employee) {
+      console.error('Employee data is not available');
+      return;
+    }
+
+    const requestBody = {
+      weekEntries: timesheetEntries,
+      approved: true,
+      employeeCode: employee._id, // Assuming employee has a property employee_code
+    };
+
+    try {
+      const response = await fetch('/api/savetimesheet', {
+        // Replace '/api/timesheet' with your actual endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setFetchedTimeSheet(true);
+      alert('Successfully saved timesheet for approval.');
+      // Handle success, e.g., showing a success message or redirecting the user
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle errors, e.g., showing an error message
+    }
+  };
+
   const aggregateHours = (entries: TimesheetEntry[]): any => {
     const summary = {
       Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 },
       Others: { Total: 0 },
       Leave: { Total: 0 },
+      Total: 0,
     };
 
     if (entries.length === 0) return summary;
@@ -154,6 +192,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
 
     // Calculate the total for 'Project'
     summary['Project']['Total'] = summary['Project']['WFO'] + summary['Project']['WFH'] + summary['Project']['SITE'];
+    summary['Total'] = summary['Project']['Total'] + summary['Others']['Total'] + summary['Leave']['Total'];
     return summary;
   };
 
@@ -168,8 +207,9 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
   const [teamsheetid, setTeamsheetid] = useState('');
   const [timesheetEntries, setTimesheetEntries] = useState<TimesheetEntry[]>([{ projectId: '', projectName: '', description: '', workType: '', hours: {} }]);
   const [unapprovedTimesheets, setUnapprovedTimesheets] = useState<Timesheet[]>();
-  const [summary, setSummary] = useState({ Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 }, Others: { Total: 0 }, Leave: { Total: 0 } });
+  const [summary, setSummary] = useState({ Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 }, Others: { Total: 0 }, Leave: { Total: 0 }, Total: 0 });
   const [rejectMessage, setRejectMessage] = useState('');
+  const [isAboveLimit, setIsAboveLimit] = useState(false);
   const workTypes = ['WFO', 'WFH', 'Site-visit', 'Meeting'];
 
   const overheads = ['Annual Leave', 'Sick Leave', 'Public Holiday', 'Business Development', 'Admin', 'IT Outage', 'Bench', 'CPD'];
@@ -269,8 +309,16 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
   };
 
   useEffect(() => {
-    setSummary(aggregateHours(timesheetEntries));
-    //console.log(summary);
+    const newSummary = aggregateHours(timesheetEntries); // Directly use the result
+    setSummary(newSummary); // Update state with new summary
+
+    if (newSummary.Total < 40) {
+      console.log(newSummary.Total);
+      setError({ isError: true, message: 'Total hours for the week cannot be less than 40 hours' });
+      setIsAboveLimit(false);
+    } else {
+      setIsAboveLimit(true);
+    }
   }, [timesheetEntries]);
 
   const handleEntryChange = (index: number, field: string, value: string | number) => {
@@ -469,8 +517,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
               <option value="">Select Timesheet</option>
               {unapprovedTimesheets?.map((timesheet) => (
                 <option key={timesheet._id} value={timesheet._id}>
-                  {timesheet.employeeCode.employee_name} -{' '}
-                  {timesheet.weekEntries && timesheet.weekEntries.length > 0 && timesheet.weekEntries[0].hours && Object.keys(timesheet.weekEntries[0].hours).length > 0 ? Object.keys(timesheet.weekEntries[0].hours)[0] : <span>No data available</span>}
+                  {timesheet.employeeCode.employee_name} - {timesheet.weekEntries && timesheet.weekEntries.length > 0 && timesheet.weekEntries[0].hours && Object.keys(timesheet.weekEntries[0].hours).length > 0 ? Object.keys(timesheet.weekEntries[0].hours)[0] : <span>No data available</span>}
                 </option>
               ))}
             </select>
@@ -687,12 +734,13 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
               </>
             )}
           </div>
-        ) : (
-          <button
-            onClick={handleSubmit}
-            disabled={checkApprovalStatus && error.isError} // Disable button if checkApprovalStatus is true
-            className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
+        ) : isAboveLimit ? (
+          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || !isAboveLimit} className={`mt-4 ${(checkApprovalStatus && error.isError) || !isAboveLimit ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
+          </button>
+        ) : (
+          <button onClick={handleSave} className={`mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded`}>
+            Save Timesheet
           </button>
         )}
         <p className="text-red">{error.message}</p>
