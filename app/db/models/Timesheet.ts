@@ -11,6 +11,7 @@ interface IWeekEntry {
 interface ITimesheetWeekDocument extends Document {
   weekEntries: IWeekEntry[];
   approved: boolean;
+  saved: boolean;
   employeeCode: Types.ObjectId;
 }
 
@@ -28,6 +29,7 @@ const WeekEntrySchema = new Schema<IWeekEntry>({
 const TimesheetWeekSchema = new Schema<ITimesheetWeekDocument>({
   weekEntries: [WeekEntrySchema], // Array of week entries
   approved: { type: Boolean, required: false, default: false },
+  saved: { type: Boolean, required: false, default: false },
   employeeCode: { 
     type: mongoose.Schema.Types.ObjectId, 
     required: true,

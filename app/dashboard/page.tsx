@@ -205,7 +205,7 @@ const Dashboard = () => {
               <div key={startDate} className="flex items-center mb-4 p-4 w-full shadow-lg rounded-lg bg-white hover:bg-gray-50 transition duration-300 ease-in-out">
                 <span className="bg-gray-200 text-gray-700 mr-4 py-2 px-3 rounded text-sm cursor-not-allowed w-[32%] flex items-center justify-center">{`${startDate.split('/').slice(0, 2).join('/')} - ${endDate.split('/').slice(0, 2).join('/')}`}</span>
                 <p className="flex-grow mr-4 font-medium">{weekExists ? (approved ? 'Approved: Yes' : 'Approved: No') : 'Not Submitted'}</p>
-                <Link href='/timesheet/user' className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-[22%] flex justify-center items-center rounded transition duration-300 ease-in-out ${approved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}><button disabled={approved}>
+                <Link href={`/timesheet/user?date=${startDate}`} className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-[22%] flex justify-center items-center rounded transition duration-300 ease-in-out ${approved ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}><button disabled={approved}>
                   {weekExists ? 'Modify' : 'Add'}
                 </button></Link>
               </div>

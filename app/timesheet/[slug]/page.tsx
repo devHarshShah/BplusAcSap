@@ -1,9 +1,12 @@
 'use client';
 import { ObjectId } from 'mongoose';
 import Navbar from '../../components/Navbar';
+import { useSearchParams  } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const Timesheet = ({ params }: { params: { slug: string } }) => {
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date');
   const [isAdmin, setIsAdmin] = useState(false);
 
   if (params.slug === 'admin') {
@@ -129,42 +132,41 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     }
   };
 
-  const handleSave = async () => {
-    // Ensure employee is not null before proceeding
-    if (!employee) {
-      console.error('Employee data is not available');
-      return;
-    }
+  // const handleSave = async () => {
+  //   // Ensure employee is not null before proceeding
+  //   if (!employee) {
+  //     console.error('Employee data is not available');
+  //     return;
+  //   }
 
-    const requestBody = {
-      weekEntries: timesheetEntries,
-      approved: true,
-      employeeCode: employee._id, // Assuming employee has a property employee_code
-    };
+  //   const requestBody = {
+  //     weekEntries: timesheetEntries,
+  //     employeeCode: employee._id, // Assuming employee has a property employee_code
+  //   };
 
-    try {
-      const response = await fetch('/api/savetimesheet', {
-        // Replace '/api/timesheet' with your actual endpoint
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
+  //   try {
+  //     const response = await fetch('/api/savetimesheet', {
+  //       // Replace '/api/timesheet' with your actual endpoint
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(requestBody),
+  //     });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
 
-      const data = await response.json();
-      setFetchedTimeSheet(true);
-      alert('Successfully saved timesheet for approval.');
-      // Handle success, e.g., showing a success message or redirecting the user
-    } catch (error) {
-      console.error('Error:', error);
-      // Handle errors, e.g., showing an error message
-    }
-  };
+  //     const data = await response.json();
+  //     setFetchedTimeSheet(true);
+  //     alert('Successfully saved timesheet for approval.');
+  //     // Handle success, e.g., showing a success message or redirecting the user
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     // Handle errors, e.g., showing an error message
+  //   }
+  // };
 
   const aggregateHours = (entries: TimesheetEntry[]): any => {
     const summary = {
@@ -313,7 +315,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     setSummary(newSummary); // Update state with new summary
 
     if (newSummary.Total < 40) {
-      console.log(newSummary.Total);
+      //console.log(newSummary.Total);
       setError({ isError: true, message: 'Total hours for the week cannot be less than 40 hours' });
       setIsAboveLimit(false);
     } else {
@@ -499,6 +501,24 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
         // Handle error
       });
   };
+
+  useEffect(() => {
+    if (date) {
+      const [day, month, year] = date.split('/');
+      const fullYear = parseInt(year.length === 2 ? '20' + year : year); // Ensure the year is in the 21st century
+      const formattedDateStr = `${month}/${day}/${fullYear}`;
+      //console.log('Formatted date:', formattedDateStr);
+      const modDate = new Date(Date.UTC(fullYear, parseInt(month) - 1, parseInt(day)));
+      //console.log('Modified date:', modDate);
+      if (!isNaN(modDate.getTime())) { // Check if the date is valid
+        const formattedDate = modDate.toISOString().split('T')[0];
+        //console.log('Formatted date:', formattedDate);
+        setStartDate(formattedDate);
+      } else {
+        console.error('Invalid date:', date);
+      }
+    }
+  }, [date]);
 
   return (
     <div
@@ -739,7 +759,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
             Submit Timesheet
           </button>
         ) : (
-          <button onClick={handleSave} className={`mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded`}>
+          <button onClick={handleSubmit} className={`mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded`}>
             Save Timesheet
           </button>
         )}
