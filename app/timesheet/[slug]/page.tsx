@@ -273,7 +273,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     const fetchData = async () => {
       if (employee && startDate && !isAdmin) {
         const start = new Date(startDate);
-        let formattedDate = start.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit' });
+        let formattedDate = start.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year:'2-digit' });
         const response = await fetch('/api/fetchtimesheet', {
           method: 'POST',
           headers: {
