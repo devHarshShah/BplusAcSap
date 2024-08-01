@@ -1,7 +1,7 @@
 'use client';
 import { ObjectId } from 'mongoose';
 import Navbar from '../../components/Navbar';
-import { useSearchParams  } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const Timesheet = ({ params }: { params: { slug: string } }) => {
@@ -70,6 +70,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     const requestBody = {
       timeSheetId: teamsheetid,
       weekEntries: timesheetEntries,
+      total: summary.Total,
     };
 
     try {
@@ -105,6 +106,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     const requestBody = {
       weekEntries: timesheetEntries,
       approved: false,
+      total: summary.Total,
       employeeCode: employee._id, // Assuming employee has a property employee_code
     };
 
@@ -124,49 +126,13 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
 
       const data = await response.json();
       setFetchedTimeSheet(true);
-      alert('Successfully saved timesheet for approval.');
+      alert('Successfully saved timesheet will be sent for approval on completion of 40 or more hours.');
       // Handle success, e.g., showing a success message or redirecting the user
     } catch (error) {
       console.error('Error:', error);
       // Handle errors, e.g., showing an error message
     }
   };
-
-  // const handleSave = async () => {
-  //   // Ensure employee is not null before proceeding
-  //   if (!employee) {
-  //     console.error('Employee data is not available');
-  //     return;
-  //   }
-
-  //   const requestBody = {
-  //     weekEntries: timesheetEntries,
-  //     employeeCode: employee._id, // Assuming employee has a property employee_code
-  //   };
-
-  //   try {
-  //     const response = await fetch('/api/savetimesheet', {
-  //       // Replace '/api/timesheet' with your actual endpoint
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(requestBody),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const data = await response.json();
-  //     setFetchedTimeSheet(true);
-  //     alert('Successfully saved timesheet for approval.');
-  //     // Handle success, e.g., showing a success message or redirecting the user
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     // Handle errors, e.g., showing an error message
-  //   }
-  // };
 
   const aggregateHours = (entries: TimesheetEntry[]): any => {
     const summary = {
@@ -212,6 +178,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
   const [summary, setSummary] = useState({ Project: { WFO: 0, WFH: 0, SITE: 0, Total: 0 }, Others: { Total: 0 }, Leave: { Total: 0 }, Total: 0 });
   const [rejectMessage, setRejectMessage] = useState('');
   const [isAboveLimit, setIsAboveLimit] = useState(false);
+  const [valueError, setValueError] = useState<string | null>(null);
   const workTypes = ['WFO', 'WFH', 'Site-visit', 'Meeting'];
 
   const overheads = ['Annual Leave', 'Sick Leave', 'Public Holiday', 'Business Development', 'Admin', 'IT Outage', 'Bench', 'CPD'];
@@ -275,7 +242,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     const fetchData = async () => {
       if (employee && startDate && !isAdmin) {
         const start = new Date(startDate);
-        let formattedDate = start.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year:'2-digit' });
+        let formattedDate = start.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' });
         const response = await fetch('/api/fetchtimesheet', {
           method: 'POST',
           headers: {
@@ -342,6 +309,13 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
     } else if (field === 'workType' || field === 'description') {
       newEntries[index][field] = String(value);
     } else {
+      if (Number(value) > 8) {
+        // Handle the error, e.g., set an error state or display a message
+        setValueError('Value cannot be greater than 8');
+      } else {
+        // Clear the error if the value is valid
+        setValueError(null);
+      }
       newEntries[index].hours[field] = String(value);
     }
     setTimesheetEntries(newEntries);
@@ -510,7 +484,8 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
       //console.log('Formatted date:', formattedDateStr);
       const modDate = new Date(Date.UTC(fullYear, parseInt(month) - 1, parseInt(day)));
       //console.log('Modified date:', modDate);
-      if (!isNaN(modDate.getTime())) { // Check if the date is valid
+      if (!isNaN(modDate.getTime())) {
+        // Check if the date is valid
         const formattedDate = modDate.toISOString().split('T')[0];
         //console.log('Formatted date:', formattedDate);
         setStartDate(formattedDate);
@@ -534,12 +509,18 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
               Select Timesheet for Approval:
             </label>
             <select id="timesheet" className="mb-4 w-full text-black border border-black p-2" onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleSelect(e.target.value)}>
-              <option value="">Select Timesheet</option>
-              {unapprovedTimesheets?.map((timesheet) => (
-                <option key={timesheet._id} value={timesheet._id}>
-                  {timesheet.employeeCode.employee_name} - {timesheet.weekEntries && timesheet.weekEntries.length > 0 && timesheet.weekEntries[0].hours && Object.keys(timesheet.weekEntries[0].hours).length > 0 ? Object.keys(timesheet.weekEntries[0].hours)[0] : <span>No data available</span>}
-                </option>
-              ))}
+              {unapprovedTimesheets && unapprovedTimesheets.length > 0 ? (
+                <>
+                  <option value="">Select Timesheet</option>
+                  {unapprovedTimesheets.map((timesheet) => (
+                    <option key={timesheet._id} value={timesheet._id}>
+                      {timesheet.employeeCode.employee_name} - {timesheet.weekEntries && timesheet.weekEntries.length > 0 && timesheet.weekEntries[0].hours && Object.keys(timesheet.weekEntries[0].hours).length > 0 ? Object.keys(timesheet.weekEntries[0].hours)[0] : <span>No data available</span>}
+                    </option>
+                  ))}
+                </>
+              ) : (
+                <option value="">No timesheets for approval</option>
+              )}
             </select>
           </>
         ) : null}
@@ -643,6 +624,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
         <button className="my-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => alert('Half Day Leave = 4 hours \nFull Day Leave = 8 hours')}>
           FAQ&apos;s
         </button>
+        <p className="text-red-600 text-sm mb-2">Fill 40 hours total, max 8 hours/day. Click on Save or update daily before exiting this page.</p>
         <table className="table-auto w-full text-black border border-black">
           <thead className="border-black border">
             <tr className="border border-black">
@@ -708,6 +690,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
                   <td key={date.date} className="border border-black w-[5%] text-center">
                     <div className="flex justify-center items-center h-full">
                       <input defaultValue={0} min={0} max={8} type="number" pattern="\d*" value={entry.hours[date.date] ?? '0'} onChange={(e) => handleEntryChange(index, date.date, parseInt(e.target.value))} className="w-full text-center" />
+                      
                     </div>
                   </td>
                 ))}
@@ -729,7 +712,9 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
               <td className="border border-black text-center">{calculateColumnTotalHours(timesheetEntries, generateDates(startDate, 7)[6]?.date)}</td>
             </tr>
           </tbody>
+          
         </table>
+        {valueError && <p className="text-red-500 mt-2">{valueError}</p>}
         {fetchedTimeSheet ? (
           <div className="flex flex-row space-x-4">
             <button
@@ -755,15 +740,14 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
             )}
           </div>
         ) : isAboveLimit ? (
-          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || !isAboveLimit} className={`mt-4 ${(checkApprovalStatus && error.isError) || !isAboveLimit ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
+          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || !isAboveLimit || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError) || !isAboveLimit ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
           </button>
         ) : (
-          <button onClick={handleSubmit} className={`mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded`}>
+          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError || valueError == 'Value cannot be greater than 8')  ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Save Timesheet
           </button>
         )}
-        <p className="text-red">{error.message}</p>
       </div>
     </div>
   );

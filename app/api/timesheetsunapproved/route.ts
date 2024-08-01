@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     await connectMongo(); // Connect to MongoDB
 
     // Fetch timesheets for the employee
-    const timesheets = await TimesheetWeek.find({ approved: false }).populate('employeeCode', 'employee_name employee_branch employee_id');
+    const timesheets = await TimesheetWeek.find({ approved: false, total: { $gte: 40 } }).populate('employeeCode', 'employee_name employee_branch employee_id');
 
     if (timesheets.length !== 0) {
       return NextResponse.json(timesheets); // Return the matching timesheet

@@ -12,6 +12,7 @@ const Login = () => {
   const [changePassword, setChangePassword] = useState(false);
   const [password, setPassword] = useState('');
   const [Cpassword, setCPassword] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(false);
 
   const handleChange = (value: string, index: number): void => {
     const newOtp: string[] = [...otp];
@@ -33,6 +34,8 @@ const Login = () => {
     // Inside an async function
     if (response.ok) {
       console.log(data.message)
+      setIsOtpSent(true);
+      alert("Sent otp to your mail.")
     } else {
       console.error(data.message);
     }
@@ -99,7 +102,7 @@ const Login = () => {
                     <input className="bg-zinc-800 text-white w-full p-2 outline-none" type="text" id="email" placeholder="Your email address" value={email} onChange={(e) => setEmail(e.target.value)} />
                   </div>
                 </div>
-                <button onClick={handleLogin} className="mb-4 w-full bg-[#E25037] text-white py-2 rounded-lg hover:bg-[#71281B] transition duration-200">
+                <button onClick={handleLogin} disabled={isOtpSent} className="mb-4 w-full bg-[#E25037] text-white py-2 rounded-lg hover:bg-[#71281B] transition duration-200">
                   Send OTP
                 </button>
                 <div className="otp flex flex-col gap-1 mb-2 lg:mb-4">

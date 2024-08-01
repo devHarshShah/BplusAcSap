@@ -5,12 +5,12 @@ import TimesheetWeek from '../../db/models/Timesheet';
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
-    const { timeSheetId, weekEntries, saved } = await req.json(); // Extract employeeCode and mondayDate from request
+    const { timeSheetId, weekEntries, total } = await req.json(); // Extract employeeCode and mondayDate from request
 
     await connectMongo(); // Connect to MongoDB
 
     // Assuming weekEntries is an object like { hoursWorked: 40, project: "New Project" }
-    const timeSheetUpdated = await TimesheetWeek.findByIdAndUpdate(timeSheetId, { weekEntries: weekEntries, saved: saved}, { new: true });
+    const timeSheetUpdated = await TimesheetWeek.findByIdAndUpdate(timeSheetId, { weekEntries: weekEntries, total: total}, { new: true });
 
     if (timeSheetUpdated) {
       return NextResponse.json(timeSheetUpdated);

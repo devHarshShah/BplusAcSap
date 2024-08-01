@@ -65,7 +65,7 @@ const Navbar = () => {
         <div className="text-lg font-bold flex flex-row justify-center items-center">
           <Image src={logo} alt="logo" width={40} height={40} />
           <p className="mt-2">BPlusAC</p>
-          <p className="mt-3 ml-2 text-[10px]">Beta v0.3.0</p>
+          <p className="mt-3 ml-2 text-[10px]">Beta v0.5.0</p>
         </div>
         {cookieExists ? (
           isAdmin ? (
