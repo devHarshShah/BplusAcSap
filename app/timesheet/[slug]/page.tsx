@@ -719,7 +719,7 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
           <div className="flex flex-row space-x-4">
             <button
               onClick={handleUpdate}
-              disabled={checkApprovalStatus && error.isError} // Disable button if checkApprovalStatus is true
+              disabled={checkApprovalStatus} // Disable button if checkApprovalStatus is true
               className={`mt-4 ${checkApprovalStatus ? 'bg-gray-500' : 'bg-orange-500 hover:bg-orange-700'} text-white font-bold py-2 px-4 rounded`}>
               Update Timesheet
             </button>
@@ -740,11 +740,11 @@ const Timesheet = ({ params }: { params: { slug: string } }) => {
             )}
           </div>
         ) : isAboveLimit ? (
-          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || !isAboveLimit || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError) || !isAboveLimit ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
+          <button onClick={handleSubmit} disabled={(checkApprovalStatus) || !isAboveLimit || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError) || !isAboveLimit ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Submit Timesheet
           </button>
         ) : (
-          <button onClick={handleSubmit} disabled={(checkApprovalStatus && error.isError) || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError || valueError == 'Value cannot be greater than 8')  ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
+          <button onClick={handleSubmit} disabled={(checkApprovalStatus) || valueError == 'Value cannot be greater than 8'} className={`mt-4 ${(checkApprovalStatus && error.isError || valueError == 'Value cannot be greater than 8')  ? 'bg-gray-500' : 'bg-green-500 hover:bg-green-700'} text-white font-bold py-2 px-4 rounded`}>
             Save Timesheet
           </button>
         )}
